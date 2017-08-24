@@ -1,10 +1,26 @@
-import axios from 'axios';
+'use strict';
 
-export class EcSdk {
-  constructor(baseURL, storeID) {
-    axios.defaults.baseURL = baseURL;
-    axios.defaults.withCredentials = true;
-    axios.defaults.headers.common['store-id'] = storeID;
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _axios = require('axios');
+
+var _axios2 = _interopRequireDefault(_axios);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var EcSdk = function () {
+  function EcSdk(baseURL, storeID) {
+    _classCallCheck(this, EcSdk);
+
+    _axios2.default.defaults.baseURL = baseURL;
+    _axios2.default.defaults.withCredentials = true;
+    _axios2.default.defaults.headers.common['store-id'] = storeID;
   }
 
   //
@@ -15,113 +31,111 @@ export class EcSdk {
   //
   //
 
-  ObjectToStringNoQuotes(object) {
-    return JSON.stringify(object).replace(/\"([^(\")"]+)\":/g,"$1:");
-  }
+  _createClass(EcSdk, [{
+    key: 'ObjectToStringNoQuotes',
+    value: function ObjectToStringNoQuotes(object) {
+      return JSON.stringify(object).replace(/\"([^(\")"]+)\":/g, "$1:");
+    }
 
-  //
-  //
-  //
-  // QUERY
-  //
-  //
-  //
+    //
+    //
+    //
+    // QUERY
+    //
+    //
+    //
 
 
     /*****     Products      *****/
 
-  // simply fetch all products available
-  fetchAllProducts() {
-    let query = `query{
-      products {
-        id
-        name
-        image_url
-      }
-    }`;
+    // simply fetch all products available
 
-    return this.get(query);
-  }
+  }, {
+    key: 'fetchAllProducts',
+    value: function fetchAllProducts() {
+      var query = 'query{\n      products {\n        id\n        name\n        image_url\n      }\n    }';
 
-  // fetch on single product
-  fetchSingleProduct(id) {
-    let query = `query{
-      products(prodId: "${id}") {
-        id
-        name
-        image_url
-      }
-    }`;
+      return this.get(query);
+    }
 
-    return this.get(query);
-  }
+    // fetch on single product
 
-  /*****     Cart      *****/
-  getCart() {
-    let query = `query{
-      cart {
-        id
-        quantity
-        value {
-          amount
-          currency
-        }
-      }
-    }`;
+  }, {
+    key: 'fetchSingleProduct',
+    value: function fetchSingleProduct(id) {
+      var query = 'query{\n      products(prodId: "' + id + '") {\n        id\n        name\n        image_url\n      }\n    }';
 
-    return this.get(query);
-  }
+      return this.get(query);
+    }
+
+    /*****     Cart      *****/
+
+  }, {
+    key: 'getCart',
+    value: function getCart() {
+      var query = 'query{\n      cart {\n        id\n        quantity\n        value {\n          amount\n          currency\n        }\n      }\n    }';
+
+      return this.get(query);
+    }
+
+    // univsersal http GET request
+
+  }, {
+    key: 'get',
+    value: function get(query) {
+      return _axios2.default.get('/', { params: { query: query } });
+    }
+  }, {
+    key: 'addToCart',
 
 
-  // univsersal http GET request
-  get(query) {
-    return axios.get(`/`, {params: {query}});
-  };
+    //
+    //
+    //
+    // MUTATION
+    //
+    //
+    //
 
 
+    /*****     Cart      *****/
 
-  //
-  //
-  //
-  // MUTATION
-  //
-  //
-  //
+    // add to cart magic
+    value: function addToCart(id) {
+      var mutation = 'mutation{\n      cart (productId:"' + id + '") {\n        quantity\n        id\n      }\n    }';
 
+      return this.post(mutation);
+    }
 
-  /*****     Cart      *****/
+    // checkout
 
-  // add to cart magic
-  addToCart(id) {
-    let mutation = `mutation{
-      cart (productId:"${id}") {
-        quantity
-        id
-      }
-    }`;
+  }, {
+    key: 'checkoutCart',
+    value: function checkoutCart(coData) {
+      var customer = coData.customer,
+          billing = coData.billing,
+          shipping = coData.shipping,
+          payment = coData.payment;
 
-    return this.post(mutation);
-  }
+      if (!coData || !customer || !billing || !shipping || !payment) return false;
 
-  // checkout
-  checkoutCart(coData) {
-    let { customer, billing, shipping, payment } = coData;
-    if(!coData || !customer || !billing || !shipping || !payment) return false;
+      var mutation = 'mutation{\n      checkout (\n        customer:' + this.ObjectToStringNoQuotes(customer) + ',\n        billing_address:' + this.ObjectToStringNoQuotes(billing) + ',\n        shipping_address:' + this.ObjectToStringNoQuotes(shipping) + ',\n        payment:' + this.ObjectToStringNoQuotes(payment) + '\n      )\n    }';
 
-    let mutation = `mutation{
-      checkout (
-        customer:${this.ObjectToStringNoQuotes(customer)},
-        billing_address:${this.ObjectToStringNoQuotes(billing)},
-        shipping_address:${this.ObjectToStringNoQuotes(shipping)},
-        payment:${this.ObjectToStringNoQuotes(payment)}
-      )
-    }`;
+      return this.post(mutation);
+    }
 
-    return this.post(mutation);
-  }
+    // univsersal http POST request
 
-  // univsersal http POST request
-  post(query) {
-    return axios.post(`/`, {query});
-  }
-};
+  }, {
+    key: 'post',
+    value: function post(query) {
+      return _axios2.default.post('/', { query: query });
+    }
+  }]);
+
+  return EcSdk;
+}();
+
+exports.default = EcSdk;
+;
+module.exports = exports['default'];

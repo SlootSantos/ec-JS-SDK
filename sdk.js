@@ -1,9 +1,22 @@
 import axios from 'axios';
 
-export class EcSdk {
+export default class EcSdk {
   constructor(baseURL, storeID) {
     axios.defaults.baseURL = baseURL;
+    axios.defaults.withCredentials = true;
     axios.defaults.headers.common['store-id'] = storeID;
+  }
+
+  //
+  //
+  //
+  // helpers
+  //
+  //
+  //
+
+  ObjectToStringNoQuotes(object) {
+    return JSON.stringify(object).replace(/\"([^(\")"]+)\":/g,"$1:");
   }
 
   //
@@ -48,6 +61,11 @@ export class EcSdk {
     let query = `query{
       cart {
         id
+        quantity
+        value {
+          amount
+          currency
+        }
       }
     }`;
 
@@ -75,13 +93,31 @@ export class EcSdk {
 
   // add to cart magic
   addToCart(id) {
-    let query = `mutation{
+    let mutation = `mutation{
       cart (productId:"${id}") {
         quantity
+        id
       }
     }`;
 
-    return this.post(query);
+    return this.post(mutation);
+  }
+
+  // checkout
+  checkoutCart(coData) {
+    let { customer, billing, shipping, payment } = coData;
+    if(!coData || !customer || !billing || !shipping || !payment) return false;
+
+    let mutation = `mutation{
+      checkout (
+        customer:${this.ObjectToStringNoQuotes(customer)},
+        billing_address:${this.ObjectToStringNoQuotes(billing)},
+        shipping_address:${this.ObjectToStringNoQuotes(shipping)},
+        payment:${this.ObjectToStringNoQuotes(payment)}
+      )
+    }`;
+
+    return this.post(mutation);
   }
 
   // univsersal http POST request
