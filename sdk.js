@@ -17,6 +17,7 @@ export default class EcSdk {
 
   ObjectToStringNoQuotes(object) {
     return JSON.stringify(object).replace(/\"([^(\")"]+)\":/g,"$1:");
+    
   }
 
   //
