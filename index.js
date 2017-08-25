@@ -137,4 +137,3 @@ var EcSdk = function () {
 }();
 
 exports.default = EcSdk;
-;
