@@ -138,3 +138,4 @@ var EcSdk = function () {
 
 exports.default = EcSdk;
 ;
+module.exports = exports['default'];
