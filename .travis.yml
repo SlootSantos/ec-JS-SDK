@@ -1,10 +1,6 @@
 language: node_js
 node_js:
 - '8'
-before_script:
-  - yarn global add babel-cli
-  - babel sdk.js -o index.js --presets=es2015
-  - git checkout master && git add index.js && git commit -m 'compile' && git push
 deploy:
   provider: npm
   email: flosloot@gmx.de
