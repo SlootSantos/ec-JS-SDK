@@ -4,6 +4,7 @@ node_js:
 before_script:
   - yarn global add babel-cli
   - babel sdk.js -o index.js --presets=es2015
+  - git add index.js && git commit -m 'compile'
 deploy:
   provider: npm
   email: flosloot@gmx.de
