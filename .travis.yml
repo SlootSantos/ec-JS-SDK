@@ -7,9 +7,9 @@ before_script:
 deploy:
   provider: npm
   email: flosloot@gmx.de
-  tag: next
   api_key:
     secure: qxKcXgdOy5W345PLvveTy0sENxnCoWYtBVsEd722iyvbljDoNP05xyxu5ii8vIFgtOkwO8D0mJvOcmQnqQ9eQ4u8X3cPwwfDMZ6Pm7phf/kMpV0+kyiGK+S5E4eJ9Xc0Ijm81ZreXYkKQnoWjMROZvDD8/DMm/lY5kmFRKFTOHnESpE63RdHeJCYWle9Ff2w44ZQxcBh+Rb4UKk27+yy3/Xo14fcqm6xDaBf2PuTus/Thsgj0oiCuN7AHYmoiSSsvyB0VGZGN3IO4UgSTOqWT98FB41vCUvNb6ksecyGCL2TJLIMWumZ9CBf47QUAfemO7r8C2to56zvWXf/J9TBTAfVgyjGFio3YupvGLSz3UmnB/rgu4xgTQSn31xJWu9iYxnltavK7vkAz/YcxquaEVQCT/brxmhNlylEfsnXJIZ1SHOJ9qpRcE+Dw7dw6CmK/XlrFJexNOL7s+c1tcOQqQ9vu+MDuXzWYqCekaWxf4TLFZBoJgglLZeGnYPo5S23HK9Vsya4CiQRfXYs3uW+yeT4sp75XKOfkYnEIakXgsb4ltH00ncpryUah05FuKpfzsR+5XPJVyJXdo8chVMt4m3iiTKrRg2W6F3UG4RJJkhj/nnaEHcZ50GQxelPwy/GyZTKoA/Q0o1MoyK/5hv53TFDtD2kO1NY7pFW5L1/cdc=
   on:
+    tag: next
     tags: true
     repo: SlootSantos/ec-JS-SDK
