@@ -53,7 +53,7 @@ var EcSdk = function () {
   }, {
     key: 'fetchAllProducts',
     value: function fetchAllProducts() {
-      var query = 'query{\n      products {\n        id\n        name\n        image_url\n      }\n    }';
+      var query = 'query{\n      products {\n        id\n        name\n        image_url\n        description\n      }\n    }';
 
       return this.get(query);
     }
@@ -63,7 +63,7 @@ var EcSdk = function () {
   }, {
     key: 'fetchSingleProduct',
     value: function fetchSingleProduct(id) {
-      var query = 'query{\n      products(prodId: "' + id + '") {\n        id\n        name\n        image_url\n      }\n    }';
+      var query = 'query{\n      products(prodId: "' + id + '") {\n        id\n        name\n        image_url\n        description\n      }\n    }';
 
       return this.get(query);
     }

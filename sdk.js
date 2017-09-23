@@ -17,7 +17,7 @@ export default class EcSdk {
 
   ObjectToStringNoQuotes(object) {
     return JSON.stringify(object).replace(/\"([^(\")"]+)\":/g,"$1:");
-    
+
   }
 
   //
@@ -38,6 +38,7 @@ export default class EcSdk {
         id
         name
         image_url
+        description
       }
     }`;
 
@@ -51,6 +52,7 @@ export default class EcSdk {
         id
         name
         image_url
+        description
       }
     }`;
 
