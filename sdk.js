@@ -95,9 +95,9 @@ export default class EcSdk {
   /*****     Cart      *****/
 
   // add to cart magic
-  addToCart(id) {
+  addToCart(id, quantity) {
     let mutation = `mutation{
-      cart (productId:"${id}") {
+      cart (productId:"${id}", quantity:"${quantity}") {
         quantity
         id
       }

@@ -101,8 +101,8 @@ var EcSdk = function () {
     /*****     Cart      *****/
 
     // add to cart magic
-    value: function addToCart(id) {
-      var mutation = 'mutation{\n      cart (productId:"' + id + '") {\n        quantity\n        id\n      }\n    }';
+    value: function addToCart(id, quantity) {
+      var mutation = 'mutation{\n      cart (productId:"' + id + '", quantity:"' + quantity + '") {\n        quantity\n        id\n      }\n    }';
 
       return this.post(mutation);
     }
