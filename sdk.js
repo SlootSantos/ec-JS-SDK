@@ -5,6 +5,7 @@ export default class EcSdk {
     axios.defaults.baseURL = baseURL;
     axios.defaults.withCredentials = true;
     axios.defaults.headers.common['store-id'] = storeID;
+    axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
   }
 
   //
@@ -63,11 +64,20 @@ export default class EcSdk {
   getCart() {
     let query = `query{
       cart {
-        id
         quantity
         value {
           amount
           currency
+        }
+        items {
+          id
+          name
+          unit_price
+          quantity
+          value {
+            amount
+            currency
+          }
         }
       }
     }`;
@@ -99,9 +109,24 @@ export default class EcSdk {
     let mutation = `mutation{
       cart (productId:"${id}", quantity:"${quantity}") {
         quantity
-        id
+        value {
+          amount
+          currency
+        }
+        items {
+          id
+          name
+          unit_price
+          quantity
+          value {
+            amount
+            currency
+          }
+        }
       }
     }`;
+
+    console.log(mutation);
 
     return this.post(mutation);
   }

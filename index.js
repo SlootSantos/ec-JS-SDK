@@ -21,6 +21,7 @@ var EcSdk = function () {
     _axios2.default.defaults.baseURL = baseURL;
     _axios2.default.defaults.withCredentials = true;
     _axios2.default.defaults.headers.common['store-id'] = storeID;
+    _axios2.default.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
   }
 
   //
@@ -73,7 +74,7 @@ var EcSdk = function () {
   }, {
     key: 'getCart',
     value: function getCart() {
-      var query = 'query{\n      cart {\n        id\n        quantity\n        value {\n          amount\n          currency\n        }\n      }\n    }';
+      var query = 'query{\n      cart {\n        quantity\n        value {\n          amount\n          currency\n        }\n        items {\n          id\n          name\n          unit_price\n          quantity\n          value {\n            amount\n            currency\n          }\n        }\n      }\n    }';
 
       return this.get(query);
     }
@@ -102,7 +103,9 @@ var EcSdk = function () {
 
     // add to cart magic
     value: function addToCart(id, quantity) {
-      var mutation = 'mutation{\n      cart (productId:"' + id + '", quantity:"' + quantity + '") {\n        quantity\n        id\n      }\n    }';
+      var mutation = 'mutation{\n      cart (productId:"' + id + '", quantity:"' + quantity + '") {\n        quantity\n        value {\n          amount\n          currency\n        }\n        items {\n          id\n          name\n          unit_price\n          quantity\n          value {\n            amount\n            currency\n          }\n        }\n      }\n    }';
+
+      console.log(mutation);
 
       return this.post(mutation);
     }
