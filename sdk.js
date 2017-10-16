@@ -37,6 +37,7 @@ export default class EcSdk {
     let query = `query{
       products {
         id
+        cartId
         name
         image_url
         description
@@ -51,6 +52,7 @@ export default class EcSdk {
     let query = `query{
       products(prodId: "${id}") {
         id
+        cartId
         name
         image_url
         description
@@ -71,6 +73,7 @@ export default class EcSdk {
         }
         items {
           id
+          cartId
           name
           unit_price
           quantity
@@ -107,7 +110,7 @@ export default class EcSdk {
   // add to cart magic
   addToCart(id, quantity) {
     let mutation = `mutation{
-      cart (productId:"${id}", quantity:"${quantity}") {
+      addCart (productId:"${id}", quantity:"${quantity}") {
         quantity
         value {
           amount
@@ -126,7 +129,26 @@ export default class EcSdk {
       }
     }`;
 
-    console.log(mutation);
+    return this.post(mutation);
+  }
+
+  // remove from cart magic
+  removeFromCart(id, quantity) {
+    let mutation = `mutation{
+      removeCart (productId:"${id}", quantity: "${quantity}") {
+        quantity
+        items {
+          id
+          name
+          unit_price
+          quantity
+          value {
+            amount
+            currency
+          }
+        }
+      }
+    }`;
 
     return this.post(mutation);
   }

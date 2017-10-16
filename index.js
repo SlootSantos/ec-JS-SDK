@@ -103,9 +103,17 @@ var EcSdk = function () {
 
     // add to cart magic
     value: function addToCart(id, quantity) {
-      var mutation = 'mutation{\n      cart (productId:"' + id + '", quantity:"' + quantity + '") {\n        quantity\n        value {\n          amount\n          currency\n        }\n        items {\n          id\n          name\n          unit_price\n          quantity\n          value {\n            amount\n            currency\n          }\n        }\n      }\n    }';
+      var mutation = 'mutation{\n      addCart (productId:"' + id + '", quantity:"' + quantity + '") {\n        quantity\n        value {\n          amount\n          currency\n        }\n        items {\n          id\n          name\n          unit_price\n          quantity\n          value {\n            amount\n            currency\n          }\n        }\n      }\n    }';
 
-      console.log(mutation);
+      return this.post(mutation);
+    }
+
+    // remove from cart magic
+
+  }, {
+    key: 'removeFromCart',
+    value: function removeFromCart(id, quantity) {
+      var mutation = 'mutation{\n      removeCart (productId:"' + id + '") {\n        quantity\n        items {\n          id\n          name\n          unit_price\n          quantity\n          value {\n            amount\n            currency\n          }\n        }\n      }\n    }';
 
       return this.post(mutation);
     }
