@@ -146,30 +146,28 @@ export default class EcSdk {
 
   // checkout
   checkoutCart(coData) {
-    return new Promise((resolve, reject) => {
-      if (coData.payment.type === 'paypal') {
-        paypalChecksumGeneration(coData.payment)
-      } else {
-        let { customer, billing, shipping, payment } = coData;
-        if (!coData || !customer || !billing || !shipping || !payment) return false;
+    if (coData.payment.type === 'paypal') {
+      this.paypalChecksumGeneration(coData.payment)
+    } else {
+      let { customer, billing, shipping, payment } = coData;
+      if (!coData || !customer || !billing || !shipping || !payment) return false;
 
-        this.checkPayment(payment)
-        .then(checkedPayment => {
+      this.checkPayment(payment)
+      .then(checkedPayment => {
 
-          let mutation = `mutation{
-            checkout (
-              type:${this.ObjectToStringNoQuotes(checkedPayment.type)}
-              customer:${this.ObjectToStringNoQuotes(customer)},
-              billing_address:${this.ObjectToStringNoQuotes(billing)},
-              shipping_address:${this.ObjectToStringNoQuotes(shipping)},
-              payment:${this.ObjectToStringNoQuotes(checkedPayment)}
-            )
-          }`;
+        let mutation = `mutation{
+          checkout (
+            type:${this.ObjectToStringNoQuotes(checkedPayment.type)}
+            customer:${this.ObjectToStringNoQuotes(customer)},
+            billing_address:${this.ObjectToStringNoQuotes(billing)},
+            shipping_address:${this.ObjectToStringNoQuotes(shipping)},
+            payment:${this.ObjectToStringNoQuotes(checkedPayment)}
+          )
+        }`;
 
-          return this.post(mutation);
-        });
-      }
-    })
+        return this.post(mutation);
+      });
+    }
   }
 
   // univsersal http POST request
@@ -192,7 +190,7 @@ export default class EcSdk {
 
   paypalChecksumGeneration(ppData) {
     return new Promise((resolve, reject) => {
-      let { amount_int, currency, type } = ppData.payment;
+      let { amount_int, currency, type } = ppData;
 
       if (!amount_int || !currency) reject();
 

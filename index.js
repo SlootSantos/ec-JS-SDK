@@ -114,25 +114,23 @@ var EcSdk = function () {
     value: function checkoutCart(coData) {
       var _this = this;
 
-      return new Promise(function (resolve, reject) {
-        if (coData.payment.type === 'paypal') {
-          paypalChecksumGeneration(coData.payment);
-        } else {
-          var customer = coData.customer,
-              billing = coData.billing,
-              shipping = coData.shipping,
-              payment = coData.payment;
+      if (coData.payment.type === 'paypal') {
+        this.paypalChecksumGeneration(coData.payment);
+      } else {
+        var customer = coData.customer,
+            billing = coData.billing,
+            shipping = coData.shipping,
+            payment = coData.payment;
 
-          if (!coData || !customer || !billing || !shipping || !payment) return false;
+        if (!coData || !customer || !billing || !shipping || !payment) return false;
 
-          _this.checkPayment(payment).then(function (checkedPayment) {
+        this.checkPayment(payment).then(function (checkedPayment) {
 
-            var mutation = 'mutation{\n            checkout (\n              type:' + _this.ObjectToStringNoQuotes(checkedPayment.type) + '\n              customer:' + _this.ObjectToStringNoQuotes(customer) + ',\n              billing_address:' + _this.ObjectToStringNoQuotes(billing) + ',\n              shipping_address:' + _this.ObjectToStringNoQuotes(shipping) + ',\n              payment:' + _this.ObjectToStringNoQuotes(checkedPayment) + '\n            )\n          }';
+          var mutation = 'mutation{\n          checkout (\n            type:' + _this.ObjectToStringNoQuotes(checkedPayment.type) + '\n            customer:' + _this.ObjectToStringNoQuotes(customer) + ',\n            billing_address:' + _this.ObjectToStringNoQuotes(billing) + ',\n            shipping_address:' + _this.ObjectToStringNoQuotes(shipping) + ',\n            payment:' + _this.ObjectToStringNoQuotes(checkedPayment) + '\n          )\n        }';
 
-            return _this.post(mutation);
-          });
-        }
-      });
+          return _this.post(mutation);
+        });
+      }
     }
 
     // univsersal http POST request
@@ -162,10 +160,9 @@ var EcSdk = function () {
       var _this2 = this;
 
       return new Promise(function (resolve, reject) {
-        var _ppData$payment = ppData.payment,
-            amount_int = _ppData$payment.amount_int,
-            currency = _ppData$payment.currency,
-            type = _ppData$payment.type;
+        var amount_int = ppData.amount_int,
+            currency = ppData.currency,
+            type = ppData.type;
 
 
         if (!amount_int || !currency) reject();
