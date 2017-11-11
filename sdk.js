@@ -146,28 +146,31 @@ export default class EcSdk {
 
   // checkout
   checkoutCart(coData) {
-    if (coData.payment.type === 'paypal') {
-      this.paypalChecksumGeneration(coData.payment)
-    } else {
-      let { customer, billing, shipping, payment } = coData;
-      if (!coData || !customer || !billing || !shipping || !payment) return false;
+    return new Promise ((resolve, reject) => {
+      if (coData.payment.type === 'paypal') {
+        this.paypalChecksumGeneration(coData.payment)
+      } else {
+        let { customer, billing, shipping, payment } = coData;
+        if (!coData || !customer || !billing || !shipping || !payment) reject();
 
-      this.checkPayment(payment)
-      .then(checkedPayment => {
+        this.checkPayment(payment)
+        .then(checkedPayment => {
 
-        let mutation = `mutation{
-          checkout (
-            type:${this.ObjectToStringNoQuotes(checkedPayment.type)}
-            customer:${this.ObjectToStringNoQuotes(customer)},
-            billing_address:${this.ObjectToStringNoQuotes(billing)},
-            shipping_address:${this.ObjectToStringNoQuotes(shipping)},
-            payment:${this.ObjectToStringNoQuotes(checkedPayment)}
-          )
-        }`;
+          let mutation = `mutation{
+            checkout (
+              type:${this.ObjectToStringNoQuotes(checkedPayment.type)}
+              customer:${this.ObjectToStringNoQuotes(customer)},
+              billing_address:${this.ObjectToStringNoQuotes(billing)},
+              shipping_address:${this.ObjectToStringNoQuotes(shipping)},
+              payment:${this.ObjectToStringNoQuotes(checkedPayment)}
+            )
+          }`;
 
-        return this.post(mutation);
-      });
-    }
+          resolve(this.post(mutation));
+        })
+        .catch(err => reject(err));
+      }
+    })
   }
 
   // univsersal http POST request
@@ -220,6 +223,7 @@ export default class EcSdk {
         first_name,
         last_name,
         accountholder,
+        cardholder,
         iban,
         bic,
         number,
@@ -231,8 +235,6 @@ export default class EcSdk {
       } = payment;
 
       if (!amount_int || !currency || !type) reject();
-
-      let fullName = first_name + last_name;
 
       if (type === 'sepa') {
         if (!iban || !bic || !accountholder) reject();

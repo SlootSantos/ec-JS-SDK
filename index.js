@@ -114,23 +114,27 @@ var EcSdk = function () {
     value: function checkoutCart(coData) {
       var _this = this;
 
-      if (coData.payment.type === 'paypal') {
-        this.paypalChecksumGeneration(coData.payment);
-      } else {
-        var customer = coData.customer,
-            billing = coData.billing,
-            shipping = coData.shipping,
-            payment = coData.payment;
+      return new Promise(function (resolve, reject) {
+        if (coData.payment.type === 'paypal') {
+          _this.paypalChecksumGeneration(coData.payment);
+        } else {
+          var customer = coData.customer,
+              billing = coData.billing,
+              shipping = coData.shipping,
+              payment = coData.payment;
 
-        if (!coData || !customer || !billing || !shipping || !payment) return false;
+          if (!coData || !customer || !billing || !shipping || !payment) reject();
 
-        this.checkPayment(payment).then(function (checkedPayment) {
+          _this.checkPayment(payment).then(function (checkedPayment) {
 
-          var mutation = 'mutation{\n          checkout (\n            type:' + _this.ObjectToStringNoQuotes(checkedPayment.type) + '\n            customer:' + _this.ObjectToStringNoQuotes(customer) + ',\n            billing_address:' + _this.ObjectToStringNoQuotes(billing) + ',\n            shipping_address:' + _this.ObjectToStringNoQuotes(shipping) + ',\n            payment:' + _this.ObjectToStringNoQuotes(checkedPayment) + '\n          )\n        }';
+            var mutation = 'mutation{\n            checkout (\n              type:' + _this.ObjectToStringNoQuotes(checkedPayment.type) + '\n              customer:' + _this.ObjectToStringNoQuotes(customer) + ',\n              billing_address:' + _this.ObjectToStringNoQuotes(billing) + ',\n              shipping_address:' + _this.ObjectToStringNoQuotes(shipping) + ',\n              payment:' + _this.ObjectToStringNoQuotes(checkedPayment) + '\n            )\n          }';
 
-          return _this.post(mutation);
-        });
-      }
+            resolve(_this.post(mutation));
+          }).catch(function (err) {
+            return reject(err);
+          });
+        }
+      });
     }
 
     // univsersal http POST request
@@ -183,6 +187,7 @@ var EcSdk = function () {
             first_name = payment.first_name,
             last_name = payment.last_name,
             accountholder = payment.accountholder,
+            cardholder = payment.cardholder,
             iban = payment.iban,
             bic = payment.bic,
             number = payment.number,
@@ -194,8 +199,6 @@ var EcSdk = function () {
 
 
         if (!amount_int || !currency || !type) reject();
-
-        var fullName = first_name + last_name;
 
         if (type === 'sepa') {
           if (!iban || !bic || !accountholder) reject();
