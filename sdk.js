@@ -23,7 +23,7 @@ export default class EcSdk {
 
   // simply fetch all products available
   fetchAllProducts() {
-    let query = `query{
+    let query = `query {
       products {
         id
         cartId
@@ -38,7 +38,7 @@ export default class EcSdk {
 
   // fetch on single product
   fetchSingleProduct(id) {
-    let query = `query{
+    let query = `query {
       products(prodId: "${id}") {
         id
         cartId
@@ -53,7 +53,7 @@ export default class EcSdk {
 
   /*****     Cart      *****/
   getCart() {
-    let query = `query{
+    let query = `query {
       cart {
         quantity
         value {
@@ -71,6 +71,20 @@ export default class EcSdk {
             currency
           }
         }
+      }
+    }`;
+
+    return this.get(query);
+  }
+
+  manualClearProcessCart(params) {
+    let query =  `query {
+      manualCheckout(
+        reason:${this.ObjectToStringNoQuotes(params.reason)}
+        cartId:${this.ObjectToStringNoQuotes(params.cartId)}
+        user:${this.ObjectToStringNoQuotes(params.user)}
+      ) {
+        checkout
       }
     }`;
 
@@ -148,7 +162,7 @@ export default class EcSdk {
   checkoutCart(coData) {
     return new Promise ((resolve, reject) => {
       if (coData.payment.type === 'paypal') {
-        this.paypalChecksumGeneration(coData.payment)
+        this.paypalChecksumGeneration(coData)
       } else {
         let { customer, billing, shipping, payment } = coData;
         if (!coData || !customer || !billing || !shipping || !payment) reject();
@@ -193,16 +207,17 @@ export default class EcSdk {
 
   paypalChecksumGeneration(ppData) {
     return new Promise((resolve, reject) => {
-      let { amount_int, currency, type } = ppData;
+      let { customer, billing, shipping, payment } = ppData;
 
-      if (!amount_int || !currency) reject();
+      if (!ppData || !customer || !billing || !shipping || !payment) reject();
 
 
       let mutation = `mutation{
         paypal (
-          type:${this.ObjectToStringNoQuotes(type)}
-          amount:${this.ObjectToStringNoQuotes(amount_int)}
-          currency:${this.ObjectToStringNoQuotes(currency)}
+          customer:${this.ObjectToStringNoQuotes(customer)},
+          billing_address:${this.ObjectToStringNoQuotes(billing)},
+          shipping_address:${this.ObjectToStringNoQuotes(shipping)},
+          payment:${this.ObjectToStringNoQuotes(payment)}
         ) {
           token
         }

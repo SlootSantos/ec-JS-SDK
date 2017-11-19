@@ -43,7 +43,7 @@ var EcSdk = function () {
   _createClass(EcSdk, [{
     key: 'fetchAllProducts',
     value: function fetchAllProducts() {
-      var query = 'query{\n      products {\n        id\n        cartId\n        name\n        image_url\n        description\n      }\n    }';
+      var query = 'query {\n      products {\n        id\n        cartId\n        name\n        image_url\n        description\n      }\n    }';
 
       return this.get(query);
     }
@@ -53,7 +53,7 @@ var EcSdk = function () {
   }, {
     key: 'fetchSingleProduct',
     value: function fetchSingleProduct(id) {
-      var query = 'query{\n      products(prodId: "' + id + '") {\n        id\n        cartId\n        name\n        image_url\n        description\n      }\n    }';
+      var query = 'query {\n      products(prodId: "' + id + '") {\n        id\n        cartId\n        name\n        image_url\n        description\n      }\n    }';
 
       return this.get(query);
     }
@@ -63,7 +63,14 @@ var EcSdk = function () {
   }, {
     key: 'getCart',
     value: function getCart() {
-      var query = 'query{\n      cart {\n        quantity\n        value {\n          amount\n          val_int\n          currency\n        }\n        items {\n          id\n          name\n          unit_price\n          quantity\n          value {\n            amount\n            currency\n          }\n        }\n      }\n    }';
+      var query = 'query {\n      cart {\n        quantity\n        value {\n          amount\n          val_int\n          currency\n        }\n        items {\n          id\n          name\n          unit_price\n          quantity\n          value {\n            amount\n            currency\n          }\n        }\n      }\n    }';
+
+      return this.get(query);
+    }
+  }, {
+    key: 'manualClearProcessCart',
+    value: function manualClearProcessCart(params) {
+      var query = 'query {\n      manualCheckout(\n        reason:' + this.ObjectToStringNoQuotes(params.reason) + '\n        cartId:' + this.ObjectToStringNoQuotes(params.cartId) + '\n        user:' + this.ObjectToStringNoQuotes(params.user) + '\n      ) {\n        checkout\n      }\n    }';
 
       return this.get(query);
     }
@@ -116,7 +123,7 @@ var EcSdk = function () {
 
       return new Promise(function (resolve, reject) {
         if (coData.payment.type === 'paypal') {
-          _this.paypalChecksumGeneration(coData.payment);
+          _this.paypalChecksumGeneration(coData);
         } else {
           var customer = coData.customer,
               billing = coData.billing,
@@ -164,14 +171,15 @@ var EcSdk = function () {
       var _this2 = this;
 
       return new Promise(function (resolve, reject) {
-        var amount_int = ppData.amount_int,
-            currency = ppData.currency,
-            type = ppData.type;
+        var customer = ppData.customer,
+            billing = ppData.billing,
+            shipping = ppData.shipping,
+            payment = ppData.payment;
 
 
-        if (!amount_int || !currency) reject();
+        if (!ppData || !customer || !billing || !shipping || !payment) reject();
 
-        var mutation = 'mutation{\n        paypal (\n          type:' + _this2.ObjectToStringNoQuotes(type) + '\n          amount:' + _this2.ObjectToStringNoQuotes(amount_int) + '\n          currency:' + _this2.ObjectToStringNoQuotes(currency) + '\n        ) {\n          token\n        }\n      }';
+        var mutation = 'mutation{\n        paypal (\n          customer:' + _this2.ObjectToStringNoQuotes(customer) + ',\n          billing_address:' + _this2.ObjectToStringNoQuotes(billing) + ',\n          shipping_address:' + _this2.ObjectToStringNoQuotes(shipping) + ',\n          payment:' + _this2.ObjectToStringNoQuotes(payment) + '\n        ) {\n          token\n        }\n      }';
 
         _this2.post(mutation).then(function (res) {
           var chks = res.data.data.paypal.token;
