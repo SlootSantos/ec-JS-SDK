@@ -83,6 +83,14 @@ var EcSdk = function () {
       return _axios2.default.get('/', { params: { query: query } });
     }
   }, {
+    key: 'options',
+
+
+    // univsersal http OPTIONS request
+    value: function options(query) {
+      return _axios2.default.options('/');
+    }
+  }, {
     key: 'addToCart',
 
 

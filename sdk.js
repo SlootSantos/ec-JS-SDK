@@ -97,6 +97,11 @@ export default class EcSdk {
     return axios.get(`/`, {params: {query}});
   };
 
+  // univsersal http OPTIONS request
+  options(query) {
+    return axios.options(`/`);
+  };
+
 
 
   //
