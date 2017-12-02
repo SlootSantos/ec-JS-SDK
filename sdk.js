@@ -8,6 +8,13 @@ export default class EcSdk {
     axios.defaults.withCredentials = true;
     axios.defaults.headers.common['store-id'] = storeID;
     axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
+
+    if (localStorage.getItem('cart-id')) {
+      axios.defaults.headers.common['cart-id'] = localStorage.getItem('cart-id')
+    } else {
+      this.get('query {config}')
+      .then(res => axios.defaults.headers.common['cart-id'] = res.headers['cart-id'])
+    }
   }
 
   //
