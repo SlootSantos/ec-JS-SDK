@@ -13,7 +13,10 @@ export default class EcSdk {
       axios.defaults.headers.common['cart-id'] = localStorage.getItem('cart-id')
     } else {
       this.get('query {config}')
-      .then(res => axios.defaults.headers.common['cart-id'] = res.headers['cart-id'])
+      .then(res => {
+        axios.defaults.headers.common['cart-id'] = res.headers['cart-id'];
+        localStorage.setItem('cart-id', res.headers['cart-id'])
+      })
     }
   }
 

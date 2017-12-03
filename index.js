@@ -29,7 +29,8 @@ var EcSdk = function () {
       _axios2.default.defaults.headers.common['cart-id'] = localStorage.getItem('cart-id');
     } else {
       this.get('query {config}').then(function (res) {
-        return _axios2.default.defaults.headers.common['cart-id'] = res.headers['cart-id'];
+        _axios2.default.defaults.headers.common['cart-id'] = res.headers['cart-id'];
+        localStorage.setItem('cart-id', res.headers['cart-id']);
       });
     }
   }
