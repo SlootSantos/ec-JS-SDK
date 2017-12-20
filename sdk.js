@@ -215,7 +215,7 @@ export default class EcSdk {
       this.options('/')
       .then(() => {
         resolve(axios.post(`/`, {
-          params: {query}
+          query
         }))
       })
     })

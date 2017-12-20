@@ -179,7 +179,7 @@ var EcSdk = function () {
       return new Promise(function (resolve) {
         _this3.options('/').then(function () {
           resolve(_axios2.default.post('/', {
-            params: { query: query }
+            query: query
           }));
         });
       });
