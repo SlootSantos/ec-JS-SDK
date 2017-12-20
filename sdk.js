@@ -104,7 +104,14 @@ export default class EcSdk {
 
   // univsersal http GET request
   get(query) {
-    return axios.get(`/`, {params: {query}});
+    return new Promise(resolve => {
+      this.options('/')
+      .then(() => {
+        resolve(axios.get(`/`, {
+          params: {query}
+        }))
+      })
+    })
   };
 
   // univsersal http OPTIONS request
@@ -204,7 +211,14 @@ export default class EcSdk {
 
   // univsersal http POST request
   post(query) {
-    return axios.post(`/`, {query});
+    return new Promise(resolve => {
+      this.options('/')
+      .then(() => {
+        resolve(axios.post(`/`, {
+          params: {query}
+        }))
+      })
+    })
   }
 
 

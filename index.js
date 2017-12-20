@@ -89,7 +89,15 @@ var EcSdk = function () {
   }, {
     key: 'get',
     value: function get(query) {
-      return _axios2.default.get('/', { params: { query: query } });
+      var _this = this;
+
+      return new Promise(function (resolve) {
+        _this.options('/').then(function () {
+          resolve(_axios2.default.get('/', {
+            params: { query: query }
+          }));
+        });
+      });
     }
   }, {
     key: 'options',
@@ -136,11 +144,11 @@ var EcSdk = function () {
   }, {
     key: 'checkoutCart',
     value: function checkoutCart(coData) {
-      var _this = this;
+      var _this2 = this;
 
       return new Promise(function (resolve, reject) {
         if (coData.payment.type === 'paypal') {
-          _this.paypalChecksumGeneration(coData);
+          _this2.paypalChecksumGeneration(coData);
         } else {
           var customer = coData.customer,
               billing = coData.billing,
@@ -149,11 +157,11 @@ var EcSdk = function () {
 
           if (!coData || !customer || !billing || !shipping || !payment) reject();
 
-          _this.checkPayment(payment).then(function (checkedPayment) {
+          _this2.checkPayment(payment).then(function (checkedPayment) {
 
-            var mutation = 'mutation{\n            checkout (\n              type:' + _this.ObjectToStringNoQuotes(checkedPayment.type) + '\n              customer:' + _this.ObjectToStringNoQuotes(customer) + ',\n              billing_address:' + _this.ObjectToStringNoQuotes(billing) + ',\n              shipping_address:' + _this.ObjectToStringNoQuotes(shipping) + ',\n              payment:' + _this.ObjectToStringNoQuotes(checkedPayment) + '\n            )\n          }';
+            var mutation = 'mutation{\n            checkout (\n              type:' + _this2.ObjectToStringNoQuotes(checkedPayment.type) + '\n              customer:' + _this2.ObjectToStringNoQuotes(customer) + ',\n              billing_address:' + _this2.ObjectToStringNoQuotes(billing) + ',\n              shipping_address:' + _this2.ObjectToStringNoQuotes(shipping) + ',\n              payment:' + _this2.ObjectToStringNoQuotes(checkedPayment) + '\n            )\n          }';
 
-            resolve(_this.post(mutation));
+            resolve(_this2.post(mutation));
           }).catch(function (err) {
             return reject(err);
           });
@@ -166,7 +174,15 @@ var EcSdk = function () {
   }, {
     key: 'post',
     value: function post(query) {
-      return _axios2.default.post('/', { query: query });
+      var _this3 = this;
+
+      return new Promise(function (resolve) {
+        _this3.options('/').then(function () {
+          resolve(_axios2.default.post('/', {
+            params: { query: query }
+          }));
+        });
+      });
     }
 
     //
@@ -185,7 +201,7 @@ var EcSdk = function () {
   }, {
     key: 'paypalChecksumGeneration',
     value: function paypalChecksumGeneration(ppData) {
-      var _this2 = this;
+      var _this4 = this;
 
       return new Promise(function (resolve, reject) {
         var customer = ppData.customer,
@@ -196,9 +212,9 @@ var EcSdk = function () {
 
         if (!ppData || !customer || !billing || !shipping || !payment) reject();
 
-        var mutation = 'mutation{\n        paypal (\n          customer:' + _this2.ObjectToStringNoQuotes(customer) + ',\n          billing_address:' + _this2.ObjectToStringNoQuotes(billing) + ',\n          shipping_address:' + _this2.ObjectToStringNoQuotes(shipping) + ',\n          payment:' + _this2.ObjectToStringNoQuotes(payment) + '\n        ) {\n          token\n        }\n      }';
+        var mutation = 'mutation{\n        paypal (\n          customer:' + _this4.ObjectToStringNoQuotes(customer) + ',\n          billing_address:' + _this4.ObjectToStringNoQuotes(billing) + ',\n          shipping_address:' + _this4.ObjectToStringNoQuotes(shipping) + ',\n          payment:' + _this4.ObjectToStringNoQuotes(payment) + '\n        ) {\n          token\n        }\n      }';
 
-        _this2.post(mutation).then(function (res) {
+        _this4.post(mutation).then(function (res) {
           var chks = res.data.data.paypal.token;
           window.paymill.createTransaction({ checksum: chks });
         });
