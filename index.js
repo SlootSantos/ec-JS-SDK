@@ -248,6 +248,8 @@ var EcSdk = function () {
         }
 
         window.paymill.createToken(payment, function (err, res) {
+          console.log(err, res);
+          debugger;
           payment.token = !err ? res.token : '';
 
           resolve(payment);

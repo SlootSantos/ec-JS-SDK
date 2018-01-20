@@ -289,6 +289,8 @@ export default class EcSdk {
       }
 
       window.paymill.createToken(payment, (err, res) => {
+        console.log(err, res);
+        debugger
         payment.token = !err
         ? res.token
         : '';
