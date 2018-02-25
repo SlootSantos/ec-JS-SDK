@@ -25,13 +25,15 @@ var EcSdk = function () {
     _axios2.default.defaults.headers.common['store-id'] = storeID;
     _axios2.default.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
 
-    if (localStorage.getItem('cart-id')) {
-      _axios2.default.defaults.headers.common['cart-id'] = localStorage.getItem('cart-id');
-    } else {
-      this.get('query {config}').then(function (res) {
-        _axios2.default.defaults.headers.common['cart-id'] = res.headers['cart-id'];
-        localStorage.setItem('cart-id', res.headers['cart-id']);
-      });
+    if (typeof window !== 'undefined' && window.localStorage !== 'undefined') {
+      if (localStorage.getItem('cart-id')) {
+        _axios2.default.defaults.headers.common['cart-id'] = localStorage.getItem('cart-id');
+      } else {
+        this.get('query {config}').then(function (res) {
+          _axios2.default.defaults.headers.common['cart-id'] = res.headers['cart-id'];
+          localStorage.setItem('cart-id', res.headers['cart-id']);
+        });
+      }
     }
   }
 
@@ -153,13 +155,14 @@ var EcSdk = function () {
           var customer = coData.customer,
               billing = coData.billing,
               shipping = coData.shipping,
-              payment = coData.payment;
+              payment = coData.payment,
+              additional = coData.additional;
 
           if (!coData || !customer || !billing || !shipping || !payment) reject();
 
           _this2.checkPayment(payment).then(function (checkedPayment) {
 
-            var mutation = 'mutation{\n            checkout (\n              type:' + _this2.ObjectToStringNoQuotes(checkedPayment.type) + '\n              customer:' + _this2.ObjectToStringNoQuotes(customer) + ',\n              billing_address:' + _this2.ObjectToStringNoQuotes(billing) + ',\n              shipping_address:' + _this2.ObjectToStringNoQuotes(shipping) + ',\n              payment:' + _this2.ObjectToStringNoQuotes(checkedPayment) + '\n            )\n          }';
+            var mutation = 'mutation{\n            checkout (\n              type:' + _this2.ObjectToStringNoQuotes(checkedPayment.type) + '\n              customer:' + _this2.ObjectToStringNoQuotes(customer) + ',\n              billing_address:' + _this2.ObjectToStringNoQuotes(billing) + ',\n              shipping_address:' + _this2.ObjectToStringNoQuotes(shipping) + ',\n              payment:' + _this2.ObjectToStringNoQuotes(checkedPayment) + ',\n              additional:' + _this2.ObjectToStringNoQuotes(additional) + '\n            )\n          }';
 
             resolve(_this2.post(mutation));
           }).catch(function (err) {
@@ -207,12 +210,13 @@ var EcSdk = function () {
         var customer = ppData.customer,
             billing = ppData.billing,
             shipping = ppData.shipping,
-            payment = ppData.payment;
+            payment = ppData.payment,
+            additional = ppData.additional;
 
 
         if (!ppData || !customer || !billing || !shipping || !payment) reject();
 
-        var mutation = 'mutation{\n        paypal (\n          customer:' + _this4.ObjectToStringNoQuotes(customer) + ',\n          billing_address:' + _this4.ObjectToStringNoQuotes(billing) + ',\n          shipping_address:' + _this4.ObjectToStringNoQuotes(shipping) + ',\n          payment:' + _this4.ObjectToStringNoQuotes(payment) + '\n        ) {\n          token\n        }\n      }';
+        var mutation = 'mutation{\n        paypal (\n          customer:' + _this4.ObjectToStringNoQuotes(customer) + ',\n          billing_address:' + _this4.ObjectToStringNoQuotes(billing) + ',\n          shipping_address:' + _this4.ObjectToStringNoQuotes(shipping) + ',\n          payment:' + _this4.ObjectToStringNoQuotes(payment) + ',\n          additional:' + _this4.ObjectToStringNoQuotes(additional) + '\n        ) {\n          token\n        }\n      }';
 
         _this4.post(mutation).then(function (res) {
           var chks = res.data.data.paypal.token;

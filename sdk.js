@@ -9,14 +9,16 @@ export default class EcSdk {
     axios.defaults.headers.common['store-id'] = storeID;
     axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
 
-    if (localStorage.getItem('cart-id')) {
-      axios.defaults.headers.common['cart-id'] = localStorage.getItem('cart-id')
-    } else {
-      this.get('query {config}')
-      .then(res => {
-        axios.defaults.headers.common['cart-id'] = res.headers['cart-id'];
-        localStorage.setItem('cart-id', res.headers['cart-id'])
-      })
+    if (typeof window !== 'undefined' && window.localStorage !== 'undefined') {
+      if (localStorage.getItem('cart-id')) {
+        axios.defaults.headers.common['cart-id'] = localStorage.getItem('cart-id')
+      } else {
+        this.get('query {config}')
+        .then(res => {
+          axios.defaults.headers.common['cart-id'] = res.headers['cart-id'];
+          localStorage.setItem('cart-id', res.headers['cart-id'])
+        })
+      }
     }
   }
 
@@ -186,7 +188,7 @@ export default class EcSdk {
       if (coData.payment.type === 'paypal') {
         this.paypalChecksumGeneration(coData)
       } else {
-        let { customer, billing, shipping, payment } = coData;
+        let { customer, billing, shipping, payment, additional } = coData;
         if (!coData || !customer || !billing || !shipping || !payment) reject();
 
         this.checkPayment(payment)
@@ -198,7 +200,8 @@ export default class EcSdk {
               customer:${this.ObjectToStringNoQuotes(customer)},
               billing_address:${this.ObjectToStringNoQuotes(billing)},
               shipping_address:${this.ObjectToStringNoQuotes(shipping)},
-              payment:${this.ObjectToStringNoQuotes(checkedPayment)}
+              payment:${this.ObjectToStringNoQuotes(checkedPayment)},
+              additional:${this.ObjectToStringNoQuotes(additional)}
             )
           }`;
 
@@ -236,7 +239,7 @@ export default class EcSdk {
 
   paypalChecksumGeneration(ppData) {
     return new Promise((resolve, reject) => {
-      let { customer, billing, shipping, payment } = ppData;
+      let { customer, billing, shipping, payment, additional } = ppData;
 
       if (!ppData || !customer || !billing || !shipping || !payment) reject();
 
@@ -246,7 +249,8 @@ export default class EcSdk {
           customer:${this.ObjectToStringNoQuotes(customer)},
           billing_address:${this.ObjectToStringNoQuotes(billing)},
           shipping_address:${this.ObjectToStringNoQuotes(shipping)},
-          payment:${this.ObjectToStringNoQuotes(payment)}
+          payment:${this.ObjectToStringNoQuotes(payment)},
+          additional:${this.ObjectToStringNoQuotes(additional)}
         ) {
           token
         }
@@ -289,8 +293,6 @@ export default class EcSdk {
       }
 
       window.paymill.createToken(payment, (err, res) => {
-        console.log(err, res);
-        debugger
         payment.token = !err
         ? res.token
         : '';
