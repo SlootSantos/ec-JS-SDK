@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/SlootSantos/ec-JS-SDK#readme",
   "dependencies": {
-    "axios": "^0.16.2",
+    "axios": "^0.21.3",
     "babel-plugin-add-module-exports": "^0.2.1",
     "babel-plugin-transform-es2015-modules-amd": "^6.24.1",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.24.1",
